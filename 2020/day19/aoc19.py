@@ -1,4 +1,3 @@
-from copy import deepcopy
 import re
 
 
@@ -57,9 +56,12 @@ class Puzzle:
         return num_valid_messages
 
 
-test = Puzzle('test1.txt')
-print(test.part1())
-assert test.part1() == 2
+test1 = Puzzle('test1.txt')
+assert test1.part1() == 2
+
+test2 = Puzzle('test2.txt')
+assert test2.part1() == 3
+assert test2.part2() == 12
 
 test = Puzzle('test2.txt')
 assert test.part1() == 3
