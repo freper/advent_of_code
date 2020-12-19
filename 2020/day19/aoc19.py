@@ -63,10 +63,6 @@ test2 = Puzzle('test2.txt')
 assert test2.part1() == 3
 assert test2.part2() == 12
 
-test = Puzzle('test2.txt')
-assert test.part1() == 3
-assert test.part2() == 12
-
 puzzle = Puzzle('input.txt')
 print("Part 1:", puzzle.part1())
 print("Part 2:", puzzle.part2())
