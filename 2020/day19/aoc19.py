@@ -11,7 +11,6 @@ class Puzzle:
         data = file.read().split("\n\n")
 
         def parse_rules(lines):
-            index = dict()
             rules = dict()
             for line in lines:
                 tmp = line.split(": ")
@@ -19,58 +18,53 @@ class Puzzle:
                 m = re.fullmatch(r'"([a-z])"', tmp[1])
                 if m:
                     rules[i] = m.group(1)
-                    index[m.group(1)] = i
                 else:
-                    rules[i] = [tuple([int(x) for x in l.split(' ')]) for l in tmp[1].split(" | ")]
-            return rules, index
-        self.rules, self.index = parse_rules(data[0].splitlines())
+                    rules[i] = [[int(x) for x in l.split(' ')] for l in tmp[1].split(" | ")]
+            return rules
+        self.rules = parse_rules(data[0].splitlines())
         self.messages = data[1].splitlines()
 
-    def expand_rule(self, x):
-        options = set(self.rules[x])
+    def is_valid(self, message, rules):
+        if len(rules) > len(message):
+            return False
+        elif len(message) == 0 or len(rules) == 0:
+            return len(message) == 0 and len(rules) == 0
 
-        index = 0
-        update_index = False
-        while index < max([len(x) for x in options]):
-            update_index = True
-            updated_options = set()
-            for option in options:
-                if index >= len(option):
-                    updated_options.add(option)
-                    continue
-                if option[index] in self.index.values():
-                    updated_options.add(option)
-                    continue
-                update_index = False
-                rules = self.rules[option[index]]
-                for rule in rules:
-                    l = list(deepcopy(option))
-                    l = l[:index] + list(rule) + l[(index + 1):]
-                    updated_options.add(tuple(deepcopy(l)))
-            options = updated_options
-            if update_index:
-                index += 1
-        return options
-
-    def valid_messages(self, x):
-        options = self.expand_rule(x)
-        messages = set()
-        for option in options:
-            message = [self.rules[x] for x in option]
-            messages.add("".join(message))
-        return messages
+        x = rules.pop(0)
+        if type(x) == str:
+            if message[0] == x:
+                return self.is_valid(message[1:], rules.copy())
+        else:
+            for rule in self.rules[x]:
+                if self.is_valid(message, list(rule) + rules):
+                    return True
+        return False
 
     def part1(self):
-        valid_messages = self.valid_messages(0)
-        sum = 0
+        num_valid_messages = 0
         for message in self.messages:
-            if message in valid_messages:
-                sum += 1
-        return sum
+            if self.is_valid(message, self.rules[0][0].copy()):
+                num_valid_messages += 1
+        return num_valid_messages
+
+    def part2(self):
+        self.rules[8] = [[42], [42, 8]]
+        self.rules[11] = [[42, 31], [42, 11, 31]]
+        num_valid_messages = 0
+        for message in self.messages:
+            if self.is_valid(message, self.rules[0][0].copy()):
+                num_valid_messages += 1
+        return num_valid_messages
 
 
-test = Puzzle('test.txt')
+test = Puzzle('test1.txt')
+print(test.part1())
 assert test.part1() == 2
+
+test = Puzzle('test2.txt')
+assert test.part1() == 3
+assert test.part2() == 12
 
 puzzle = Puzzle('input.txt')
 print("Part 1:", puzzle.part1())
+print("Part 2:", puzzle.part2())
