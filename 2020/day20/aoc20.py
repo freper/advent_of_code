@@ -37,8 +37,6 @@ class Puzzle:
         data = file.read().split("\n\n")
         header = re.compile(r'Tile (\d+):')
         self.tiles = dict()
-        self.edges_cw = dict()
-        self.edges_ccw = dict()
         for tile in data:
             lines = tile.splitlines()
             if len(lines) == 0:
@@ -120,7 +118,8 @@ class Puzzle:
             tile.y = ref.y
         if tile.flipped:
             tile.image = np.fliplr(tile.image)
-        tile.image = np.rot90(tile.image, tile.rotation)
+        if tile.rotation != 0:
+            tile.image = np.rot90(tile.image, tile.rotation)
         assert tile.edges_cw[0] == tuple(tile.image[0, :].tolist())
 
     def arrange_tiles(self):
@@ -140,8 +139,7 @@ class Puzzle:
                 next_no = next(iter(neighbours.intersection(corners)))
                 corners.remove(next_no)
             else:
-                print("Unexpected error")
-                exit()
+                raise RuntimeError()
             border.append(next_no)
         prev_tile = self.tiles[border[0]]
         prev_tile.x = 0
