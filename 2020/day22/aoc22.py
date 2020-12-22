@@ -1,13 +1,17 @@
 class Puzzle:
-    def __init__(self, filename):
+    def __init__(self, filename, verbose=False):
         self.read_input(filename)
-        self.history = set()
+        self.verbose = verbose
 
     def read_input(self, filename):
         file = open(filename, 'r')
         data = file.read().split("\n\n")
         self.player1 = [int(x) for x in data[0].splitlines()[1:]]
         self.player2 = [int(x) for x in data[1].splitlines()[1:]]
+
+    def debug(self, *args):
+        if self.verbose:
+            print(*args)
 
     def play_game(self, cards1, cards2):
         while not len(cards1) == 0 and not len(cards2) == 0:
@@ -25,10 +29,13 @@ class Puzzle:
             return self.calculate_score(cards1)
 
     def play_recursive_game(self, cards1, cards2, game_no=1):
-        # print("\n=== Game {} ===".format(game_no))
+        self.debug("\n=== Game {} ===".format(game_no))
         previous = list()
         round_no = 1
         while not len(cards1) == 0 and not len(cards2) == 0:
+            self.debug("\n-- Round {} (Game {}) --".format(round_no, game_no))
+            self.debug("Player 1's deck:", cards1)
+            self.debug("Player 2's deck:", cards2)
             card1 = cards1.pop(0)
             card2 = cards2.pop(0)
             cards = tuple(cards1 + cards2)
@@ -36,40 +43,35 @@ class Puzzle:
                 return 1
             else:
                 previous.append(cards)
-            # print("\n-- Round {} (Game {}) --".format(round_no, game_no))
-            # print("Player 1's deck:", cards1)
-            # print("Player 2's deck:", cards2)
-            # card1 = cards1.pop(0)
-            # card2 = cards2.pop(0)
-            # print("Player 1 plays:", card1)
-            # print("Player 2 plays:", card2)
+            self.debug("Player 1 plays:", card1)
+            self.debug("Player 2 plays:", card2)
             if len(cards1) >= card1 and len(cards2) >= card2:
-                # print("Playing a sub-game to determine the winner...")
+                self.debug("Playing a sub-game to determine the winner...")
                 result = self.play_recursive_game(
                     cards1[:card1],
                     cards2[:card2],
                     game_no + 1)
                 if result == 1:
-                    # print("Player 1 wins round {} of game {}!".format(round_no, game_no))
+                    self.debug("Player 1 wins round {} of game {}!".format(round_no, game_no))
                     cards1 += [card1, card2]
                 else:
-                    # print("Player 2 wins round {} of game {}!".format(round_no, game_no))
+                    self.debug("Player 2 wins round {} of game {}!".format(round_no, game_no))
                     cards2 += [card2, card1]
             elif card1 > card2:
-                # print("Player 1 wins round {} of game {}!".format(round_no, game_no))
+                self.debug("Player 1 wins round {} of game {}!".format(round_no, game_no))
                 cards1 += [card1, card2]
             else:
-                # print("Player 2 wins round {} of game {}!".format(round_no, game_no))
+                self.debug("Player 2 wins round {} of game {}!".format(round_no, game_no))
                 cards2 += [card2, card1]
             round_no += 1
         if len(cards1) == 0:
-            # print("The winner of game {} is player 2!".format(game_no))
+            self.debug("The winner of game {} is player 2!".format(game_no))
             if game_no == 1:
                 return self.calculate_score(cards2)
             else:
                 return 2
         else:
-            # print("The winner of game {} is player 1!".format(game_no))
+            self.debug("The winner of game {} is player 1!".format(game_no))
             if game_no == 1:
                 return self.calculate_score(cards1)
             else:
