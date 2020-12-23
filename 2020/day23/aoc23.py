@@ -36,20 +36,39 @@ class Puzzle:
         cups = cups[i:] + cups[:i]
         return "".join([str(x) for x in cups[1:]])
 
-    def part2(self, num_moves=10000000):
+    def part2(self, num_moves=10000000, num_cups=1000000):
         cups = self.input.copy()
-        cups = cups + [x + 1 for x in range(max(cups), 1000000)]
-        for i in range(num_moves):
-            cups = self.move_cups(cups)
-        i = cups.index(1)
-        return cups[i+1] * cups[i+2]
+        num_cups = max(len(cups), num_cups)
+        next_index = [i for i in range(1, num_cups + 1)]
+        for i, x in enumerate(cups):
+            next_index[x - 1] = cups[i + 1] - 1 if i + 1 < len(cups) else max(cups)
+        next_index[-1] = cups[0] - 1
+
+        current = cups[0] - 1
+        for _ in range(num_moves):
+            a = next_index[current]
+            b = next_index[a]
+            c = next_index[b]
+            x = next_index[c]
+            d = (current - 1) % num_cups
+            while d in [a, b, c]:
+                d = (d - 1) % num_cups
+            e = next_index[d]
+            next_index[d] = a
+            next_index[c] = e
+            next_index[current] = x
+            current = next_index[current]
+
+        v1 = next_index[0]
+        v2 = next_index[v1]
+        return (v1 + 1) * (v2 + 1)
 
 
 test = Puzzle("389125467")
 assert test.part1(10) == "92658374"
 assert test.part1() == "67384529"
-# assert test.part2() == 149245887792
+assert test.part2() == 149245887792
 
 puzzle = Puzzle("418976235")
 print("Part 1:", puzzle.part1())
-# print("Part 2:", puzzle.part2())
+print("Part 2:", puzzle.part2())
