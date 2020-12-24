@@ -20,6 +20,9 @@ class Tile:
             self.y += 1
         else:
             raise ValueError("Invalid direction")
+        return self.coord()
+
+    def coord(self):
         return (self.x, self.y)
 
 
@@ -39,8 +42,8 @@ class Puzzle:
                 d = l.pop(0)
                 if d not in ['e', 'w']:
                     d += l.pop(0)
-                coord = tile.offset(d)
-            return coord
+                tile.offset(d)
+            return tile.coord()
 
         self.black_tiles = set()
         for line in lines:
@@ -59,11 +62,10 @@ class Puzzle:
                 neighbour = Tile(coord).offset(d)
                 if neighbour in self.black_tiles:
                     self.black_tiles_with_black_neighbours[coord] += 1
+                elif neighbour in self.white_tiles_with_black_neighbours.keys():
+                    self.white_tiles_with_black_neighbours[neighbour] += 1
                 else:
-                    if neighbour in self.white_tiles_with_black_neighbours.keys():
-                        self.white_tiles_with_black_neighbours[neighbour] += 1
-                    else:
-                        self.white_tiles_with_black_neighbours[neighbour] = 1
+                    self.white_tiles_with_black_neighbours[neighbour] = 1
 
     def flip_tiles(self):
         for coord, n in self.black_tiles_with_black_neighbours.items():
