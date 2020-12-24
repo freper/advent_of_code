@@ -48,10 +48,10 @@ class Puzzle:
         self.black_tiles = set()
         for line in lines:
             coord = parse_line(line)
-            if coord not in self.black_tiles:
-                self.black_tiles.add(coord)
-            else:
+            if coord in self.black_tiles:
                 self.black_tiles.remove(coord)
+            else:
+                self.black_tiles.add(coord)
 
     def check_neighbours(self):
         self.black_tiles_with_black_neighbours = dict()
