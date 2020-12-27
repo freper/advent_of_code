@@ -23,7 +23,6 @@ class Puzzle:
             loop_size += 1
             value *= subject_number
             value %= 20201227
-
         return loop_size
 
     def part1(self):
