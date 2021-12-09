@@ -36,6 +36,33 @@ class Puzzle:
                     low_points.append((i, j))
         return low_points
 
+    def get_neighbours(self, point):
+        i, j = point
+        rows = self.heightmap.shape[0]
+        cols = self.heightmap.shape[1]
+        neighbours = set()
+        if i > 0 and self.heightmap[i - 1, j] < 9:
+            neighbours.add((i - 1, j))
+        if i < rows - 1 and self.heightmap[i + 1, j] < 9:
+            neighbours.add((i + 1, j))
+        if j > 0 and self.heightmap[i, j - 1] < 9:
+            neighbours.add((i, j - 1))
+        if j < cols - 1 and self.heightmap[i, j + 1] < 9:
+            neighbours.add((i, j + 1))
+        return neighbours
+
+    def find_basin(self, low_point):
+        basin = {low_point}
+        old_points = {low_point}
+        while len(old_points) > 0:
+            new_points = set()
+            for point in old_points:
+                neighbours = self.get_neighbours(point)
+                new_points.update(neighbours - basin)
+            basin.update(new_points)
+            old_points = new_points
+        return basin
+
     def part1(self):
         risk = 0
         for i, j in self.find_low_points():
@@ -43,15 +70,21 @@ class Puzzle:
         return risk
 
     def part2(self):
-        return 2
+        low_points = self.find_low_points()
+        basins = dict()
+        for point in low_points:
+            basins[point] = self.find_basin(point)
+        sizes = [len(points) for points in basins.values()]
+        sizes.sort(reverse=True)
+        return sizes[0] * sizes[1] * sizes[2]
 
 
 test = Puzzle('test.txt')
 assert test.part1() == 15
-# assert test.part2() == 1134
+assert test.part2() == 1134
 # print("Part 1:", test.part1())
-print("Part 2:", test.part2())
+# print("Part 2:", test.part2())
 
 puzzle = Puzzle('input.txt')
 print("Part 1:", puzzle.part1())
-# print("Part 2:", puzzle.part2())
+print("Part 2:", puzzle.part2())
