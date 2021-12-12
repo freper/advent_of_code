@@ -37,17 +37,7 @@ class Puzzle:
                 caves.add(cave)
         return False
 
-    def extend_path1(self, path):
-        last_cave = path[-1]
-        small_caves = self.visited_small_caves(path)
-        extended_paths = set()
-        for cave in self.valid_paths[last_cave]:
-            if cave in small_caves:
-                continue
-            extended_paths.add(path + (cave,))
-        return extended_paths
-
-    def extend_path2(self, path):
+    def extend_path(self, path, allow_visit_small_cave_twice=False):
         last_cave = path[-1]
         small_caves = self.visited_small_caves(path)
         visited_small_cave_twice = self.has_visited_small_cave_twice(path)
@@ -55,44 +45,39 @@ class Puzzle:
         for cave in self.valid_paths[last_cave]:
             if cave == "start":
                 continue
-            if cave in small_caves and visited_small_cave_twice:
-                continue
+            if cave in small_caves:
+                if allow_visit_small_cave_twice:
+                    if visited_small_cave_twice:
+                        continue
+                else:
+                    continue
             extended_paths.add(path + (cave,))
         return extended_paths
 
-    def part1(self):
+    def find_paths(self, allow_visit_small_cave_twice=False):
         open_paths = set()
         closed_paths = set()
         for cave in self.valid_paths["start"]:
             open_paths.add(("start", cave))
         while len(open_paths) > 0:
-            new_paths = set()
+            new_open_paths = set()
             for path in open_paths:
-                updated_paths = self.extend_path1(path)
-                for updated_path in updated_paths:
-                    if updated_path[-1] == "end":
-                        closed_paths.add(updated_path)
+                extended_paths = self.extend_path(path, allow_visit_small_cave_twice)
+                for extended_path in extended_paths:
+                    if extended_path[-1] == "end":
+                        closed_paths.add(extended_path)
                     else:
-                        new_paths.add(updated_path)
-            open_paths = new_paths
-        return len(closed_paths)
+                        new_open_paths.add(extended_path)
+            open_paths = new_open_paths
+        return closed_paths
+
+    def part1(self):
+        paths = self.find_paths()
+        return len(paths)
 
     def part2(self):
-        open_paths = set()
-        closed_paths = set()
-        for cave in self.valid_paths["start"]:
-            open_paths.add(("start", cave))
-        while len(open_paths) > 0:
-            new_paths = set()
-            for path in open_paths:
-                updated_paths = self.extend_path2(path)
-                for updated_path in updated_paths:
-                    if updated_path[-1] == "end":
-                        closed_paths.add(updated_path)
-                    else:
-                        new_paths.add(updated_path)
-            open_paths = new_paths
-        return len(closed_paths)
+        paths = self.find_paths(True)
+        return len(paths)
 
 
 test1 = Puzzle('test1.txt')
