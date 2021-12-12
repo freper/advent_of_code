@@ -72,8 +72,6 @@ class Puzzle:
 test = Puzzle('test.txt')
 assert test.part1() == 1656
 assert test.part2() == 195
-# print("Part 1:", test.part1())
-# print("Part 2:", test.part2())
 
 puzzle = Puzzle('input.txt')
 print("Part 1:", puzzle.part1())

@@ -76,7 +76,7 @@ class Puzzle:
         return len(paths)
 
     def part2(self):
-        paths = self.find_paths(True)
+        paths = self.find_paths(allow_visit_small_cave_twice=True)
         return len(paths)
 
 

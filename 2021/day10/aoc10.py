@@ -1,4 +1,3 @@
-
 score_table1 = {")": 3, "]": 57, "}": 1197, ">": 25137}
 score_table2 = {")": 1, "]": 2, "}": 3, ">": 4}
 
@@ -48,8 +47,7 @@ class Puzzle:
                     stack.pop()
             if not corrupt and len(stack) > 0:  # Incomplete line
                 score = 0
-                stack.reverse()
-                for bracket in stack:
+                for bracket in reversed(stack):
                     close_bracket = open_to_close_bracket[bracket]
                     score = score * 5 + score_table2[close_bracket]
                 scores.append(score)
@@ -61,8 +59,6 @@ class Puzzle:
 test = Puzzle('test.txt')
 assert test.part1() == 26397
 assert test.part2() == 288957
-# print("Part 1:", test.part1())
-# print("Part 2:", test.part2())
 
 puzzle = Puzzle('input.txt')
 print("Part 1:", puzzle.part1())
