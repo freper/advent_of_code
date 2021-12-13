@@ -34,20 +34,18 @@ class Puzzle:
         return point
 
     @staticmethod
-    def write_svg(points):
-        scale = 10
-        width = max([point[0] for point in points]) + 2
-        height = max([point[1] for point in points]) + 2
-        filename = "day13.svg"
-        print('Writing frame to file:', filename)
-        file = open(filename, 'w')
-        file.write(
-            f'<svg height="{height * scale}px" width="{width * scale}px" viewBox="{-1} {-1} {width} {height}" xmlns="http://www.w3.org/2000/svg">\n')
-        for point in points:
-            file.write(
-                f'\t<circle cx="{point[0]}" cy="{point[1]}" r="0.5"/>\n')
-        file.write('</svg>')
-        file.close()
+    def print(points):
+        cols = max([point[0] for point in points]) + 1
+        rows = max([point[1] for point in points]) + 1
+        for row in range(rows):
+            values = [point[0] for point in points if point[1] == row]
+            str = ""
+            for col in range(cols):
+                if col in values:
+                    str += "#"
+                else:
+                    str += "."
+            print(str)
 
     def part1(self):
         points = set()
@@ -62,12 +60,11 @@ class Puzzle:
             for point in points:
                 new_points.add(self.fold_point(point, fold))
             (points, new_points) = (new_points, points)
-        self.write_svg(points)
+        return self.print(points)
 
 
 test = Puzzle('test.txt')
 assert test.part1() == 17
-# assert test.part2() == 2
 print("Part 2:", test.part2())
 
 puzzle = Puzzle('input.txt')
