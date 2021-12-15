@@ -1,3 +1,6 @@
+from collections import deque
+
+
 class Puzzle:
     def __init__(self, filename):
         self.read_input(filename)
@@ -31,20 +34,17 @@ class Puzzle:
     @staticmethod
     def find_minimum_risk(start, target, riskmap):
         risks = {start: 0}
-        updated = True
-        while updated:
-            new_risks = risks.copy()
-            updated = False
-            for position, risk in risks.items():
-                for offset in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
-                    new_position = (position[0] + offset[0], position[1] + offset[1])
-                    if not new_position in riskmap.keys():
-                        continue
-                    new_risk = risk + riskmap[new_position]
-                    if new_position not in new_risks.keys() or new_risk < new_risks[new_position]:
-                        new_risks[new_position] = new_risk
-                        updated = True
-            risks, new_risks = new_risks, risks
+        nodes = deque([start])
+        while nodes:
+            node = nodes.popleft()
+            for offset in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+                new_node = (node[0] + offset[0], node[1] + offset[1])
+                if new_node not in riskmap.keys():
+                    continue
+                new_risk = risks[node] + riskmap[new_node]
+                if new_node not in risks.keys() or new_risk < risks[new_node]:
+                    risks[new_node] = new_risk
+                    nodes.append(new_node)
         return risks[target]
 
     def part1(self):
