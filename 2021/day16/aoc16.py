@@ -92,24 +92,12 @@ class Puzzle:
 
     def get_packet_version_sum(self, message):
         bits = self.hex_to_bits(message)
-<<<<<<< HEAD
-        offset = 0
-        version_sum = 0
-        _, version_sum, _ = self.parse_packet(bits, offset, version_sum)
-=======
         version_sum = self.parse_packet(bits, 0, 0)[1]
->>>>>>> Solution for 2021 day 16
         return version_sum
 
     def get_packet_value(self, message):
         bits = self.hex_to_bits(message)
-<<<<<<< HEAD
-        offset = 0
-        version_sum = 0
-        _, _, value = self.parse_packet(bits, offset, version_sum)
-=======
         value = self.parse_packet(bits, 0, 0)[2]
->>>>>>> Solution for 2021 day 16
         return value
 
     def part1(self):
