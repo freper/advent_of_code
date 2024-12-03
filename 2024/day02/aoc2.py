@@ -27,7 +27,7 @@ class Puzzle:
         def parse_line(line):
             return [int(value) for value in line.split()]
         self.reports = [parse_line(line) for line in lines]
-   
+
     def part1(self):
         sum = 0
         for report in self.reports:
